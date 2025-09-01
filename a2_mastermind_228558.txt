@@ -12,37 +12,71 @@ fun main(args: Array<String>) {
    println(evaluar("ABCD", "ABDC") == Evaluacion(2, 2))
    println(evaluar("AABC", "ADFE") == Evaluacion(1, 0))
    println(evaluar("AABC", "DEAA") == Evaluacion(0, 2))
+fun main() {
+    // Demostración de mensajes solicitados
+    mostrarEvaluacion("ABCD", "ABCD")
+    mostrarEvaluacion("ABCD", "CDBA")
+    mostrarEvaluacion("ABCD", "ABDC")
+    mostrarEvaluacion("AABC", "ADFE")
+    mostrarEvaluacion("AABC", "DEAA")
 }
 
+/**
+ * Evalúa un intento contra el secreto y retorna los conteos de posiciones exactas y 
+ * colores correctos en posiciones incorrectas.
+ *
+ * @throws IllegalArgumentException si las longitudes difieren. // Por claridad de contrato
+ */
 fun evaluar(secret: String, guess: String): Evaluacion {
+    require(secret.length == guess.length) { "secret y guess deben tener la misma longitud" }
+
     var posicionExacta = 0
     var posicionIncorrecta = 0
-    
+
     // Escribir tu código aquí
-    
-    require(secret.length == guess.length) { "secret y guess deben tener la misma longitud" }
-    val pendientesSecret = mutableMapOf<Char, Int>() // Conteo de carácteres con coincidencias no exactas
-    val indicesNoExactos = ArrayList<Int>(secret.length) // Marca los índices donde se encontraron las coincidencias no exactas
-    
+
+    // Conteo de carácteres con coincidencias no exactas
+    val pendientesSecret = mutableMapOf<Char, Int>()
+
+    // Marca los índices donde se encontraron las coincidencias no exactas
+    val indicesNoExactos = ArrayList<Int>(secret.length)
+
+    // 1) Contar coincidencias exactas y preparar pendientes
     for (i in secret.indices) {
-		val s = secret[i]
-		val g = guess[i]
-		if (s == g) {
-			posicionExacta++
-		} else {
-			pendientesSecret[s] = (pendientesSecret[s] ?: 0) + 1
-			indicesNoExactos += i
-		}
-}
+        val s = secret[i]
+        val g = guess[i]
+        if (s == g) {
+            posicionExacta++
+        } else {
+            pendientesSecret[s] = (pendientesSecret[s] ?: 0) + 1
+            indicesNoExactos += i
+        }
+    }
+
+    // 2) Contar colores correctos en posiciones incorrectas sin doble conteo
     
-	for (i in indicesNoExactos) {
-		val g = guess[i]
-		val disponibles = pendientesSecret[g] ?: 0
-		if (disponibles > 0) {
-			posicionIncorrecta++
-		if (disponibles == 1) pendientesSecret.remove(g) else pendientesSecret[g] = disponibles - 1
-		}
-}
-    
+    for (i in indicesNoExactos) {
+        val g = guess[i]
+        val disponibles = pendientesSecret[g] ?: 0
+        if (disponibles > 0) {
+            posicionIncorrecta++
+            if (disponibles == 1) pendientesSecret.remove(g) else pendientesSecret[g] = disponibles - 1
+        }
+    }
+
     return Evaluacion(posicionExacta, posicionIncorrecta)
+}
+
+
+/**
+ * Muestra en consola el resultado en términos de puntos negros y blancos.
+ * Se usa para cumplir con el requisito de imprimir un mensaje claro para el usuario.
+ */
+fun mostrarEvaluacion(secret: String, guess: String) {
+    val ev = evaluar(secret, guess)
+    // println("Secreto: $secret | Intento: $guess") (Esta línea como tal te muestra el secreto y la respuesta tecleada, 
+    // pero deliberadamente la oculté para ser más fiel al juego)
+    println("Puntos negros (color y posición correctos): ${ev.posicionExacta}")
+    println("Puntos blancos (color correcto en posición errónea): ${ev.posicionIncorrecta}")
+    println()
 }
