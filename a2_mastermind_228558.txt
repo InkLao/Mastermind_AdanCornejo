@@ -20,5 +20,29 @@ fun evaluar(secret: String, guess: String): Evaluacion {
     
     // Escribir tu código aquí
     
+    require(secret.length == guess.length) { "secret y guess deben tener la misma longitud" }
+    val pendientesSecret = mutableMapOf<Char, Int>() // Conteo de carácteres con coincidencias no exactas
+    val indicesNoExactos = ArrayList<Int>(secret.length) // Marca los índices donde se encontraron las coincidencias no exactas
+    
+    for (i in secret.indices) {
+		val s = secret[i]
+		val g = guess[i]
+		if (s == g) {
+			posicionExacta++
+		} else {
+			pendientesSecret[s] = (pendientesSecret[s] ?: 0) + 1
+			indicesNoExactos += i
+		}
+}
+    
+	for (i in indicesNoExactos) {
+		val g = guess[i]
+		val disponibles = pendientesSecret[g] ?: 0
+		if (disponibles > 0) {
+			posicionIncorrecta++
+		if (disponibles == 1) pendientesSecret.remove(g) else pendientesSecret[g] = disponibles - 1
+		}
+}
+    
     return Evaluacion(posicionExacta, posicionIncorrecta)
 }
