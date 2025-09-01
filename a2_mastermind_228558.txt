@@ -1,0 +1,24 @@
+/**
+ * Asignación 2 - Mastermind 
+ * Nombre: Adán Cornejo
+ * Id: 00000228558
+ **/
+
+data class Evaluacion(val posicionExacta: Int, val posicionIncorrecta: Int)
+
+fun main(args: Array<String>) {
+   println(evaluar("ABCD", "ABCD") == Evaluacion(4, 0))
+   println(evaluar("ABCD", "CDBA") == Evaluacion(0, 4))
+   println(evaluar("ABCD", "ABDC") == Evaluacion(2, 2))
+   println(evaluar("AABC", "ADFE") == Evaluacion(1, 0))
+   println(evaluar("AABC", "DEAA") == Evaluacion(0, 2))
+}
+
+fun evaluar(secret: String, guess: String): Evaluacion {
+    var posicionExacta = 0
+    var posicionIncorrecta = 0
+    
+    // Escribir tu código aquí
+    
+    return Evaluacion(posicionExacta, posicionIncorrecta)
+}
